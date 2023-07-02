@@ -1,1 +1,1 @@
-C:\Users\sinne\Code\practice-2023\build\classes\kotlin\main\MainKt.class
+C:\Users\talis\IdeaProjects\practice-2023\build\classes\kotlin\main\MainKt.class
