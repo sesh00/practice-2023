@@ -1,17 +1,28 @@
 import java.io.File
 
-class FileHandler {
-//    fun readGraphFromFile(filename: String): Graph {
-//        val graph = Graph()
-//
-//        val lines = File(filename).readLines()
-//        for (line in lines) {
-//            val vertices = line.split(" ").map { it.toInt() }
-//            val source = vertices[0]
-//            val destination = vertices[1]
-//            graph.addEdge(source, destination)
-//        }
-//
-//        return graph
-//    }
+object FileHandler {
+    fun readGraphFromFile(filePath: String): MutableMap<Vertex, MutableSet<Vertex>> {
+        val vertices = mutableMapOf<Vertex, MutableSet<Vertex>>()
+        val verticesMap = mutableMapOf<Int, Vertex>()
+        val file = File(filePath)
+
+        file.bufferedReader().useLines { lines ->
+            lines.forEach { line ->
+                val vertexId = line.split(" ").map { it.toInt() }
+
+
+                verticesMap.getOrPut(vertexId[0]) { Vertex(id = vertexId[0]) }
+                verticesMap.getOrPut(vertexId[1]) { Vertex(id = vertexId[1]) }
+                val vertex1 = verticesMap[vertexId[0]]!!
+                val vertex2 = verticesMap[vertexId[1]]!!
+
+                vertices.getOrPut(vertex1) { mutableSetOf() }.add(vertex2)
+                vertices.getOrPut(vertex2) { mutableSetOf() }
+            }
+        }
+
+        return vertices
+    }
 }
+
+

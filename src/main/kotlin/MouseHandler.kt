@@ -67,7 +67,7 @@ class MouseHandler(private val panel: Panel) : MouseAdapter() {
         }
     }
 
-    private fun resetFlags() {
+     fun resetFlags() {
         startVertex = null
         isDrawingEdge = false
         isRemovingVertex = false

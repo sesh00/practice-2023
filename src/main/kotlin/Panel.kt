@@ -1,7 +1,6 @@
 import java.awt.*
 import javax.swing.JPanel
-import kotlin.math.atan2
-import kotlin.math.sin
+import kotlin.math.*
 
 class Panel : JPanel() {
     private lateinit var g2d: Graphics2D
@@ -80,14 +79,14 @@ class Panel : JPanel() {
     }
 
     private fun calculateEndpoint(vertex: Vertex, angle: Double, radiusOffset: Int): Point {
-        val x = vertex.x + radiusOffset * kotlin.math.cos(angle)
+        val x = vertex.x + radiusOffset * cos(angle)
         val y = vertex.y + radiusOffset * sin(angle)
         return Point(x.toInt(), y.toInt())
     }
 
     private fun Graphics2D.drawArrow(x: Int, y: Int, angle: Double) {
         val arrowSize = ARROW_SIZE
-        val x1 = (x - arrowSize * kotlin.math.cos(angle)).toInt()
+        val x1 = (x - arrowSize * cos(angle)).toInt()
         val y1 = (y - arrowSize * sin(angle)).toInt()
         drawLine(x, y, x1, y1)
     }
@@ -107,14 +106,40 @@ class Panel : JPanel() {
     }
 
     fun addEdge() {
-        updateMouseHandler(isDrawingEdge = true, isRemovingVertex = false, isRemovingEdge = false)
+        updateMouseHandler(isDrawingEdge = true,
+            isRemovingVertex = false, isRemovingEdge = false)
     }
 
     fun removeVertex() {
-        updateMouseHandler(isDrawingEdge = false, isRemovingVertex = true, isRemovingEdge = false)
+        updateMouseHandler(isDrawingEdge = false,
+            isRemovingVertex = true, isRemovingEdge = false)
     }
 
     fun removeEdge() {
-        updateMouseHandler(isDrawingEdge = false, isRemovingEdge = true, isRemovingVertex = true)
+        updateMouseHandler(isDrawingEdge = false,
+            isRemovingEdge = true, isRemovingVertex = true)
+    }
+
+    fun arrangeVerticesInCircle() {
+        val radius = min(width, height) * 0.4
+        val centerX = width / 2
+        val centerY = height / 2
+
+        val angleStep = 2 * PI / vertices.size
+
+        var angle = 0.0
+
+
+
+        for (vertex in vertices.keys) {
+            val x = centerX + (radius * cos(angle)).toInt()
+            val y = centerY + (radius * sin(angle)).toInt()
+            vertex.x = x
+            vertex.y = y
+
+            angle += angleStep
+        }
+
+        repaint()
     }
 }

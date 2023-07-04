@@ -1,4 +1,3 @@
-import java.awt.Dimension
 import javax.swing.Box
 import javax.swing.JButton
 import javax.swing.JFileChooser
@@ -54,17 +53,17 @@ class GraphicalInterface(private val panel: Panel) {
 
         panel.add(Box.createVerticalGlue())
 
-        val NextStepButton = JButton("Следующий шаг").apply {
+        val nextStepButton = JButton("Следующий шаг").apply {
             isFocusPainted = false
         }
-        NextStepButton.setEnabled(false)
-        panel.add(NextStepButton)
+        nextStepButton.isEnabled = false
+        panel.add(nextStepButton)
 
-        val ResultButton = JButton("Результат").apply {
+        val resultButton = JButton("Результат").apply {
             isFocusPainted = false
         }
-        ResultButton.setEnabled(false)
-        panel.add(ResultButton)
+        resultButton.isEnabled = false
+        panel.add(resultButton)
 
         fileChooser.currentDirectory = java.io.File(".")
         fileChooser.fileSelectionMode = JFileChooser.FILES_ONLY
@@ -74,6 +73,9 @@ class GraphicalInterface(private val panel: Panel) {
         val returnValue = fileChooser.showOpenDialog(panel)
         if (returnValue == JFileChooser.APPROVE_OPTION) {
             val selectedFile = fileChooser.selectedFile
+            val pathFile = selectedFile.absolutePath
+            panel.vertices = FileHandler.readGraphFromFile(pathFile)
+            panel.arrangeVerticesInCircle()
 
         }
     }

@@ -6,7 +6,8 @@ class Main {
     fun run() {
         val frame = JFrame("Panel Repaint on Mouse Click")
         frame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
-        frame.contentPane.preferredSize = Dimension(500, 300)
+        frame.contentPane.preferredSize = Dimension(600, 450)
+        frame.minimumSize = Dimension(600, 450)
 
         val panel = Panel()
         panel.layout = BoxLayout(panel, BoxLayout.Y_AXIS)
