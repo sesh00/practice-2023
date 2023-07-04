@@ -13,54 +13,59 @@ class MouseHandler(private val panel: Panel) : MouseAdapter() {
 
     override fun mousePressed(e: MouseEvent) {
         val clickedPoint = e.point
-        var check = false
-        for (vertex in panel.vertices.keys)
+        var vertexClicked = false
+
+        for (vertex in panel.vertices.keys) {
             if (vertex.containsPoint(clickedPoint)) {
                 draggedVertex = vertex
                 dragOffsetX = clickedPoint.x - vertex.x
                 dragOffsetY = clickedPoint.y - vertex.y
-                check = true
+                vertexClicked = true
                 break
             }
+        }
 
-        if (!check) {
+        if (!vertexClicked) {
             panel.vertices[Vertex(e.x, e.y, index)] = mutableSetOf()
-            isDrawingEdge = false
-            isRemovingVertex = false
-            startVertex = null
+            resetFlags()
             panel.repaint()
             index++
-        } else {
-            if (isDrawingEdge) {
-                if (startVertex == null) startVertex = draggedVertex
-                else {
-                    if (startVertex != draggedVertex)
-                        panel.vertices[startVertex]!!.add(draggedVertex!!)
-                    isDrawingEdge = false
-                    startVertex = null
-                }
-                panel.repaint()
-            } else if (isRemovingVertex) {
-                panel.vertices.remove(draggedVertex)
-                panel.vertices.forEach { vert, adjacencyList ->
-                    if (adjacencyList.contains(draggedVertex))
-                        panel.vertices[vert]?.remove(draggedVertex)
-                }
-                isRemovingVertex = false
-                panel.repaint()
-            }
         }
+
+        if (isDrawingEdge && startVertex == null && vertexClicked) {
+            startVertex = draggedVertex
+        } else if (isDrawingEdge && startVertex != null && vertexClicked && startVertex != draggedVertex) {
+            panel.vertices[startVertex]?.add(draggedVertex!!)
+            resetFlags()
+        } else if (isRemovingVertex && vertexClicked) {
+            panel.vertices.remove(draggedVertex)
+            panel.vertices.forEach { (vert, adjacencyList) ->
+                if (adjacencyList.contains(draggedVertex)) {
+                    panel.vertices[vert]?.remove(draggedVertex)
+                }
+            }
+            resetFlags()
+        }
+
+        panel.repaint()
     }
+
 
     override fun mouseReleased(e: MouseEvent) {
         draggedVertex = null
     }
 
     override fun mouseDragged(e: MouseEvent) {
-        if (draggedVertex != null) {
-            draggedVertex?.x = e.x - dragOffsetX
-            draggedVertex?.y = e.y - dragOffsetY
+        draggedVertex?.let {
+            it.x = e.x - dragOffsetX
+            it.y = e.y - dragOffsetY
             panel.repaint()
         }
+    }
+
+    private fun resetFlags() {
+        startVertex = null
+        isDrawingEdge = false
+        isRemovingVertex = false
     }
 }

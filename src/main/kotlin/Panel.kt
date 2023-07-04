@@ -1,81 +1,95 @@
 import java.awt.*
-import java.awt.Color
-import java.awt.Graphics
 import javax.swing.JPanel
-
+import kotlin.math.atan2
+import kotlin.math.sin
 
 class Panel : JPanel() {
-    var vertices: MutableMap<Vertex, MutableSet<Vertex>> = mutableMapOf()
+    private lateinit var g2d: Graphics2D
     private val mouseHandler = MouseHandler(this)
+    private val fontStyle = Font("Arial ", Font.BOLD, 20)
+    var vertices: MutableMap<Vertex, MutableSet<Vertex>> = mutableMapOf()
 
     init {
         addMouseListener(mouseHandler)
         addMouseMotionListener(mouseHandler)
+        background = Color.WHITE
+        layout = FlowLayout()
+    }
+
+    companion object {
+        private const val ARROW_SIZE = 10
+        private const val LINE_WIDTH = 2f
+        private val VERTEX_COLOR = Color.BLACK
+        private val START_VERTEX_COLOR = Color.PINK
+        private val TEXT_COLOR = Color.BLACK
     }
 
     override fun paintComponent(g: Graphics) {
         super.paintComponent(g)
+        g2d = g as? Graphics2D ?: return
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
 
-        val g2d = g as Graphics2D
-        if (mouseHandler.startVertex != null) {
-            val vert = mouseHandler.startVertex!!
-            val halfRad = vert.radius / 2
-            g2d.color = Color.PINK
-            g2d.fillOval(vert.x - halfRad, vert.y - halfRad, vert.radius, vert.radius)
+
+        mouseHandler.startVertex?.let { startVertex ->
+            val halfRad = startVertex.radius / 2
+            g2d.color = START_VERTEX_COLOR
+            g2d.fillOval(startVertex.x - halfRad, startVertex.y - halfRad, startVertex.radius, startVertex.radius)
         }
 
-        vertices.forEach { vert, adjacencyList ->
-            if (vert.x >= 0 && vert.y >= 0) {
-                g2d.stroke = BasicStroke(2f)
+        vertices.forEach { (vertex, adjacencyList) ->
+            if (vertex.x >= 0 && vertex.y >= 0) {
+                with(g2d) {
+                    stroke = BasicStroke(LINE_WIDTH)
+                    color = VERTEX_COLOR
+                    font = fontStyle
+                    val halfRad = vertex.radius / 2
 
-                val halfRad = vert.radius/2
-                g2d.color = Color.BLACK
-                g2d.drawOval(vert.x - halfRad, vert.y - halfRad, vert.radius, vert.radius)
+                    drawOval(vertex.x - halfRad, vertex.y - halfRad, vertex.radius, vertex.radius)
 
-                val fontSize = 20
-                g2d.font = Font("Arial ", Font.BOLD, fontSize)
+                    val letter = vertex.id.toString()
+                    val fm = fontMetrics
+                    val letterWidth = fm.stringWidth(letter)
+                    val letterHeight = fm.height
+                    val letterX = vertex.x - halfRad + (vertex.radius - letterWidth) / 2
+                    val letterY = vertex.y - halfRad / 4 * 5 + (vertex.radius + letterHeight) / 2
 
-                val letter = vert.id.toString()
-                val fm = g2d.fontMetrics
-                val letterWidth = fm.stringWidth(letter)
-                val letterHeight = fm.height
+                    color = TEXT_COLOR
+                    drawString(letter, letterX, letterY)
 
-                val letterX = vert.x - halfRad + (vert.radius - letterWidth) / 2
-                val letterY = vert.y - halfRad / 4 * 5 + (vert.radius + letterHeight) / 2
-
-                g2d.color = Color.BLACK
-                g2d.drawString(letter, letterX, letterY)
-                for (adjacencyVert in adjacencyList) {
-                    drawEdge(g2d, vert, adjacencyVert)
+                    adjacencyList.forEach { adjacencyVertex ->
+                        drawEdge(vertex, adjacencyVertex)
+                    }
                 }
             }
         }
     }
 
-    fun drawEdge(g: Graphics, vertex1: Vertex, vertex2: Vertex) {
-        val arrowSize = 10
+    private fun drawEdge(vertex1: Vertex, vertex2: Vertex) {
         val dx = vertex2.x - vertex1.x
         val dy = vertex2.y - vertex1.y
-        val angle = Math.atan2(dy.toDouble(), dx.toDouble())
+        val angle = atan2(dy.toDouble(), dx.toDouble())
 
-        val delta1X = vertex1.radius / 2 * Math.cos(angle)
-        val delta1Y = vertex1.radius / 2 * Math.sin(angle)
-        val startX = vertex1.x + delta1X
-        val startY = vertex1.y + delta1Y
+        val startEndpoint = calculateEndpoint(vertex1, angle, vertex1.radius / 2)
+        val endEndpoint = calculateEndpoint(vertex2, angle, -vertex2.radius / 2)
 
-        val delta2X = vertex2.radius / 2 * Math.cos(angle)
-        val delta2Y = vertex2.radius / 2 * Math.sin(angle)
-        val endX = vertex2.x - delta2X
-        val endY = vertex2.y - delta2Y
+        with(g2d) {
+            drawLine(startEndpoint.x, startEndpoint.y, endEndpoint.x, endEndpoint.y)
+            drawArrow(endEndpoint.x, endEndpoint.y, angle - Math.PI / 6)
+            drawArrow(endEndpoint.x, endEndpoint.y, angle + Math.PI / 6)
+        }
+    }
 
-        g.drawLine(startX.toInt(), startY.toInt(), endX.toInt(), endY.toInt())
+    private fun calculateEndpoint(vertex: Vertex, angle: Double, radiusOffset: Int): Point {
+        val x = vertex.x + radiusOffset * kotlin.math.cos(angle)
+        val y = vertex.y + radiusOffset * sin(angle)
+        return Point(x.toInt(), y.toInt())
+    }
 
-        val x1 = (endX - arrowSize * Math.cos(angle - Math.PI / 6)).toInt()
-        val y1 = (endY - arrowSize * Math.sin(angle - Math.PI / 6)).toInt()
-        val x2 = (endX - arrowSize * Math.cos(angle + Math.PI / 6)).toInt()
-        val y2 = (endY - arrowSize * Math.sin(angle + Math.PI / 6)).toInt()
-        g.drawLine(endX.toInt(), endY.toInt(), x1, y1)
-        g.drawLine(endX.toInt(), endY.toInt(), x2, y2)
+    private fun Graphics2D.drawArrow(x: Int, y: Int, angle: Double) {
+        val arrowSize = ARROW_SIZE
+        val x1 = (x - arrowSize * kotlin.math.cos(angle)).toInt()
+        val y1 = (y - arrowSize * sin(angle)).toInt()
+        drawLine(x, y, x1, y1)
     }
 
     fun removeAllPoints() {
@@ -83,15 +97,19 @@ class Panel : JPanel() {
         repaint()
     }
 
+    private fun updateMouseHandler(isDrawingEdge: Boolean, isRemovingVertex: Boolean) {
+        with(mouseHandler) {
+            startVertex = null
+            this.isDrawingEdge = isDrawingEdge
+            this.isRemovingVertex = isRemovingVertex
+        }
+    }
+
     fun addEdge() {
-        mouseHandler.startVertex = null
-        mouseHandler.isDrawingEdge = true
-        mouseHandler.isRemovingVertex = false
+        updateMouseHandler(isDrawingEdge = true, isRemovingVertex = false)
     }
 
     fun removeVertex() {
-        mouseHandler.isRemovingVertex = true
-        mouseHandler.isDrawingEdge = false
+        updateMouseHandler(isDrawingEdge = false, isRemovingVertex = true)
     }
 }
-
