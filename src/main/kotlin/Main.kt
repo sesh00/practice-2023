@@ -1,6 +1,8 @@
+import java.awt.BorderLayout
+import java.awt.Color
 import java.awt.Dimension
-import javax.swing.BoxLayout
-import javax.swing.JFrame
+import java.awt.GridBagLayout
+import javax.swing.*
 
 class Main {
     fun run() {

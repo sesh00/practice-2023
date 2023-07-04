@@ -6,6 +6,8 @@ class Panel : JPanel() {
     private lateinit var g2d: Graphics2D
     private val mouseHandler = MouseHandler(this)
     private val fontStyle = Font("Arial ", Font.BOLD, 20)
+
+    var explanation: Explanations = Explanations.NOTEXT
     var vertices: MutableMap<Vertex, MutableSet<Vertex>> = mutableMapOf()
 
     init {
@@ -30,6 +32,7 @@ class Panel : JPanel() {
 
 
         mouseHandler.startVertex?.let { startVertex ->
+            explanation = Explanations.CHOOSEVERTEX2
             val halfRad = startVertex.radius / 2
             g2d.color = START_VERTEX_COLOR
             g2d.fillOval(startVertex.x - halfRad, startVertex.y - halfRad, startVertex.radius, startVertex.radius)
@@ -60,6 +63,34 @@ class Panel : JPanel() {
                     }
                 }
             }
+        }
+        drawExplanation()
+        explanation = Explanations.NOTEXT
+    }
+
+    private fun drawExplanation() {
+        with(g2d) {
+            var x = 150
+            var y = 20
+            color = TEXT_COLOR
+            font = Font("Arial", Font.BOLD, 14)
+
+            val words: List<String> = explanation.text.split(" ")
+            var line = StringBuilder()
+            var maxWidth = getWidth() - 150
+
+            for (word in words) {
+                if (fontMetrics.stringWidth("$line $word") <= maxWidth) {
+                    line.append(word).append(" ")
+
+                } else {
+                    drawString(line.toString(), x, y)
+                    y += fontMetrics.height
+                    line = StringBuilder("$word ")
+                }
+            }
+
+            drawString(line.toString(), x, y)
         }
     }
 
@@ -93,6 +124,7 @@ class Panel : JPanel() {
 
     fun removeAllPoints() {
         vertices = mutableMapOf()
+        mouseHandler.index = 1
         repaint()
     }
 
@@ -108,11 +140,15 @@ class Panel : JPanel() {
     fun addEdge() {
         updateMouseHandler(isDrawingEdge = true,
             isRemovingVertex = false, isRemovingEdge = false)
+        explanation = Explanations.CHOOSEVERTEX1
+        repaint()
     }
 
     fun removeVertex() {
         updateMouseHandler(isDrawingEdge = false,
             isRemovingVertex = true, isRemovingEdge = false)
+        explanation = Explanations.DELVERTEX
+        repaint()
     }
 
     fun removeEdge() {
@@ -121,15 +157,13 @@ class Panel : JPanel() {
     }
 
     fun arrangeVerticesInCircle() {
+        explanation = Explanations.NOTEXT
         val radius = min(width, height) * 0.4
-        val centerX = width / 2
+        val centerX = width / 2 + 50
         val centerY = height / 2
 
         val angleStep = 2 * PI / vertices.size
-
         var angle = 0.0
-
-
 
         for (vertex in vertices.keys) {
             val x = centerX + (radius * cos(angle)).toInt()
@@ -141,5 +175,9 @@ class Panel : JPanel() {
         }
 
         repaint()
+        explanation = Explanations.CHOOSEVERTEX1
+        repaint()
+        updateMouseHandler(isDrawingEdge = false,
+            isRemovingEdge = true, isRemovingVertex = true)
     }
 }

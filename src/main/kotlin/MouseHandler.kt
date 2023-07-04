@@ -5,7 +5,8 @@ class MouseHandler(private val panel: Panel) : MouseAdapter() {
     private var draggedVertex: Vertex? = null
     private var dragOffsetX = 0
     private var dragOffsetY = 0
-    private var index = 1
+
+    var index = 1
 
     var startVertex: Vertex? = null
     var isDrawingEdge: Boolean = false
