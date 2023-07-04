@@ -97,22 +97,24 @@ class Panel : JPanel() {
         repaint()
     }
 
-    private fun updateMouseHandler(isDrawingEdge: Boolean, isRemovingVertex: Boolean) {
+    private fun updateMouseHandler(isDrawingEdge: Boolean, isRemovingVertex: Boolean, isRemovingEdge: Boolean) {
         with(mouseHandler) {
             startVertex = null
             this.isDrawingEdge = isDrawingEdge
             this.isRemovingVertex = isRemovingVertex
+            this.isRemovingEdge = isRemovingEdge
         }
     }
 
     fun addEdge() {
-        updateMouseHandler(isDrawingEdge = true, isRemovingVertex = false)
+        updateMouseHandler(isDrawingEdge = true, isRemovingVertex = false, isRemovingEdge = false)
     }
 
     fun removeVertex() {
-        updateMouseHandler(isDrawingEdge = false, isRemovingVertex = true)
+        updateMouseHandler(isDrawingEdge = false, isRemovingVertex = true, isRemovingEdge = false)
     }
 
     fun removeEdge() {
+        updateMouseHandler(isDrawingEdge = false, isRemovingEdge = true, isRemovingVertex = true)
     }
 }

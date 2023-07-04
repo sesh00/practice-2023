@@ -10,6 +10,7 @@ class MouseHandler(private val panel: Panel) : MouseAdapter() {
     var startVertex: Vertex? = null
     var isDrawingEdge: Boolean = false
     var isRemovingVertex: Boolean = false
+    var isRemovingEdge: Boolean = false
 
     override fun mousePressed(e: MouseEvent) {
         val clickedPoint = e.point
@@ -32,10 +33,13 @@ class MouseHandler(private val panel: Panel) : MouseAdapter() {
             index++
         }
 
-        if (isDrawingEdge && startVertex == null && vertexClicked) {
+        if ((isDrawingEdge || isRemovingEdge) && startVertex == null && vertexClicked) {
             startVertex = draggedVertex
         } else if (isDrawingEdge && startVertex != null && vertexClicked && startVertex != draggedVertex) {
             panel.vertices[startVertex]?.add(draggedVertex!!)
+            resetFlags()
+        } else if (isRemovingEdge && startVertex != null && vertexClicked && startVertex != draggedVertex) {
+            panel.vertices[startVertex]?.remove(draggedVertex!!)
             resetFlags()
         } else if (isRemovingVertex && vertexClicked) {
             panel.vertices.remove(draggedVertex)
@@ -67,5 +71,6 @@ class MouseHandler(private val panel: Panel) : MouseAdapter() {
         startVertex = null
         isDrawingEdge = false
         isRemovingVertex = false
+        isRemovingEdge = false
     }
 }
