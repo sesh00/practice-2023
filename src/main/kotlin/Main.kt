@@ -1,13 +1,15 @@
 import java.awt.Dimension
+import javax.swing.BoxLayout
 import javax.swing.JFrame
 
 class Main {
     fun run() {
         val frame = JFrame("Panel Repaint on Mouse Click")
         frame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
-        frame.contentPane.preferredSize = Dimension(300, 200)
+        frame.contentPane.preferredSize = Dimension(500, 300)
 
         val panel = Panel()
+        panel.layout = BoxLayout(panel, BoxLayout.Y_AXIS)
         frame.contentPane.add(panel)
 
         val graphicalInterface = GraphicalInterface(panel)

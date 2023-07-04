@@ -112,4 +112,7 @@ class Panel : JPanel() {
     fun removeVertex() {
         updateMouseHandler(isDrawingEdge = false, isRemovingVertex = true)
     }
+
+    fun removeEdge() {
+    }
 }
