@@ -6,7 +6,6 @@ class MouseHandler(private val panel: Panel) : MouseAdapter() {
     private var dragOffsetX = 0
     private var dragOffsetY = 0
 
-    var index = 1
 
     var startVertex: Vertex? = null
     var isDrawingEdge: Boolean = false
@@ -28,10 +27,9 @@ class MouseHandler(private val panel: Panel) : MouseAdapter() {
         }
 
         if (!vertexClicked) {
-            panel.vertices[Vertex(e.x, e.y, index)] = mutableSetOf()
+            panel.vertices[Vertex.createWithId(e.x, e.y)] = mutableSetOf()
             resetFlags()
             panel.repaint()
-            index++
         }
 
         if ((isDrawingEdge || isRemovingEdge) && startVertex == null && vertexClicked) {
@@ -68,7 +66,7 @@ class MouseHandler(private val panel: Panel) : MouseAdapter() {
         }
     }
 
-     fun resetFlags() {
+     private fun resetFlags() {
         startVertex = null
         isDrawingEdge = false
         isRemovingVertex = false

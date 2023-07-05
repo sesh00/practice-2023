@@ -6,13 +6,15 @@ object FileHandler {
         val verticesMap = mutableMapOf<Int, Vertex>()
         val file = File(filePath)
 
+        Vertex.idCounter = 1
+
         file.bufferedReader().useLines { lines ->
             lines.forEach { line ->
                 val vertexId = line.split(" ").map { it.toInt() }
 
 
-                verticesMap.getOrPut(vertexId[0]) { Vertex(id = vertexId[0]) }
-                verticesMap.getOrPut(vertexId[1]) { Vertex(id = vertexId[1]) }
+                verticesMap.getOrPut(vertexId[0]) { Vertex.createWithId(0, 0) }
+                verticesMap.getOrPut(vertexId[1]) { Vertex.createWithId(0, 0) }
                 val vertex1 = verticesMap[vertexId[0]]!!
                 val vertex2 = verticesMap[vertexId[1]]!!
 

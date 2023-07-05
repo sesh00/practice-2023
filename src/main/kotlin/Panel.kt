@@ -124,7 +124,7 @@ class Panel : JPanel() {
 
     fun removeAllPoints() {
         vertices = mutableMapOf()
-        mouseHandler.index = 1
+        Vertex.idCounter = 1
         repaint()
     }
 
@@ -138,22 +138,36 @@ class Panel : JPanel() {
     }
 
     fun addEdge() {
-        updateMouseHandler(isDrawingEdge = true,
-            isRemovingVertex = false, isRemovingEdge = false)
-        explanation = Explanations.CHOOSEVERTEX1
-        repaint()
+        if (vertices.size >= 2) {
+            updateMouseHandler(
+                isDrawingEdge = true,
+                isRemovingVertex = false, isRemovingEdge = false
+            )
+            explanation = Explanations.CHOOSEVERTEX1
+            repaint()
+        }
     }
 
     fun removeVertex() {
-        updateMouseHandler(isDrawingEdge = false,
-            isRemovingVertex = true, isRemovingEdge = false)
-        explanation = Explanations.DELVERTEX
-        repaint()
+        if (vertices.size >= 1) {
+            updateMouseHandler(
+                isDrawingEdge = false,
+                isRemovingVertex = true, isRemovingEdge = false
+            )
+            explanation = Explanations.DELVERTEX
+            repaint()
+        }
     }
 
     fun removeEdge() {
-        updateMouseHandler(isDrawingEdge = false,
-            isRemovingEdge = true, isRemovingVertex = true)
+        if (vertices.any { (_, value) -> value.size >= 1 }) {
+            updateMouseHandler(
+                isDrawingEdge = false,
+                isRemovingEdge = true, isRemovingVertex = true
+            )
+            explanation = Explanations.CHOOSEVERTEX1
+            repaint()
+        }
     }
 
     fun arrangeVerticesInCircle() {
