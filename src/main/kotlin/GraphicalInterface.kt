@@ -74,9 +74,15 @@ class GraphicalInterface(private val panel: Panel) {
         if (returnValue == JFileChooser.APPROVE_OPTION) {
             val selectedFile = fileChooser.selectedFile
             val pathFile = selectedFile.absolutePath
-            panel.vertices = FileHandler.readGraphFromFile(pathFile)
-            panel.arrangeVerticesInCircle()
-
+            val result = FileHandler.readGraphFromFile(pathFile)
+            if (result != null) {
+                panel.vertices = result
+                panel.arrangeVerticesInCircle()
+            } else {
+                panel.explanation = Explanations.FILEERROR
+                panel.removeAllPoints()
+                panel.repaint()
+            }
         }
     }
 }

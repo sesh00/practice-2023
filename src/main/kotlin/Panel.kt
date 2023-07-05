@@ -189,9 +189,5 @@ class Panel : JPanel() {
         }
 
         repaint()
-        explanation = Explanations.CHOOSEVERTEX1
-        repaint()
-        updateMouseHandler(isDrawingEdge = false,
-            isRemovingEdge = true, isRemovingVertex = true)
     }
 }

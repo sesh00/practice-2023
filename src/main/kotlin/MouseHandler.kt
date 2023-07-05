@@ -26,7 +26,7 @@ class MouseHandler(private val panel: Panel) : MouseAdapter() {
             }
         }
 
-        if (!vertexClicked) {
+        if (!vertexClicked && e.x >= 0 && e.y >= 0) {
             panel.vertices[Vertex.createWithId(e.x, e.y)] = mutableSetOf()
             resetFlags()
             panel.repaint()
@@ -59,11 +59,13 @@ class MouseHandler(private val panel: Panel) : MouseAdapter() {
     }
 
     override fun mouseDragged(e: MouseEvent) {
-        draggedVertex?.let {
-            it.x = e.x - dragOffsetX
-            it.y = e.y - dragOffsetY
-            panel.repaint()
-        }
+        if (e.x - dragOffsetX >= 0 && e.y - dragOffsetY >= 0 &&
+                e.x - dragOffsetX < panel.width && e.y - dragOffsetY < panel.height)
+            draggedVertex?.let {
+                it.x = e.x - dragOffsetX
+                it.y = e.y - dragOffsetY
+                panel.repaint()
+            }
     }
 
      private fun resetFlags() {
