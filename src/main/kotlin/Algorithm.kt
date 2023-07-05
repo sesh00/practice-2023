@@ -73,6 +73,7 @@ private fun fillOrder(v: Int, visited: BooleanArray, stack: MutableList<Int>) { 
 	stack.add(v)
 }
 }
+/*
 fun main() {
 val graph = Algorithm(8)
 graph.addEdge(0, 1)
@@ -93,3 +94,4 @@ graph.addEdge(6, 5)
 println("Компоненты сильной связности:")
 graph.printSCCs()
 }
+*/
