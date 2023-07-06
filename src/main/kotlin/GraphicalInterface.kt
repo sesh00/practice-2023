@@ -14,6 +14,7 @@ class GraphicalInterface(private val panel: Panel,
             ButtonData("Удалить ребро") { panel.removeEdge() },
             ButtonData("Файл") { chooseFile() },
             ButtonData("Вычислить") {
+                panel.repaint()
                 panel.disableButtons()
                 panel.disableMouseListener(false)
                 mediator.startShow()

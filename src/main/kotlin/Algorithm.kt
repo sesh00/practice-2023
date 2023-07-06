@@ -1,12 +1,13 @@
 class Algorithm(private val graph: Graph) {
-    private var visited: MutableMap<Int, Boolean> = mutableMapOf()
+    val traversalFirst: MutableList<Int> = mutableListOf()
+    val traversalSecond: MutableList<Int> = mutableListOf()
     private lateinit var stack: MutableList<Int>
     private lateinit var transposedGraph: Graph
 
     private fun dfsUtil(vertex: Int) {
-        visited[vertex] = true
+        traversalFirst.add(vertex)
         for (neighbor in graph.getNeighbors(vertex)) {
-            if (!visited[neighbor]!!) {
+            if (neighbor !in traversalFirst) {
                 dfsUtil(neighbor)
             }
         }
@@ -15,11 +16,11 @@ class Algorithm(private val graph: Graph) {
     }
 
     private fun dfs(vertex: Int, result: MutableList<Int>, graph_: Graph) {
-        visited[vertex] = true
+        traversalSecond.add(vertex)
         result.add(vertex)
 
         for (neighbor in graph_.getNeighbors(vertex)) {
-            if (!visited[neighbor]!!) {
+            if (neighbor !in traversalSecond) {
                 dfs(neighbor, result, graph_)
             }
         }
@@ -27,24 +28,21 @@ class Algorithm(private val graph: Graph) {
 
     fun getComponents(): List<List<Int>> {
         val vertices = graph.getVertices()
-        visited = vertices.associateWith { false }.toMutableMap()
         stack = mutableListOf()
         val result: MutableList<List<Int>> = mutableListOf()
 
         for (vertex in graph.getVertices()) {
-            if (!visited[vertex]!!) {
+            if (vertex !in traversalFirst) {
                 dfsUtil(vertex)
             }
         }
 
         val transposedGraph = graph.getTranspose()
 
-        visited = vertices.associateWith { false }.toMutableMap()
-
         while (stack.isNotEmpty()) {
             val vertex = stack.removeAt(stack.size - 1)
 
-            if (!visited[vertex]!!) {
+            if (vertex !in traversalSecond) {
                 val component = mutableListOf<Int>()
                 dfs(vertex, component, transposedGraph)
                 result.add(component)

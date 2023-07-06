@@ -12,6 +12,8 @@ class Panel : JPanel() {
     private var cachedColors: MutableMap<Int, Color> = mutableMapOf()
     var vertices: MutableMap<Vertex, MutableSet<Vertex>> = mutableMapOf()
     var sccList: MutableList<MutableList<Vertex>> = mutableListOf()
+    var sccColorList: MutableList<Color> = mutableListOf()
+    var visited: MutableList<Vertex> = mutableListOf()
 
 
     init {
@@ -60,9 +62,20 @@ class Panel : JPanel() {
         }
 
         with(g2d){
-            for(id in 0 until sccList.size){
-                color = getVertexColor(id)
-                sccList[id].forEach{ vertex ->
+            if (sccList.size == sccColorList.size) {
+                color = getVertexColor(sccList.size)
+                sccColorList.add(color)
+            } else color = sccColorList.last()
+            for(vertex in visited){
+                val halfRad = vertex.radius / 2
+                fillOval(vertex.x - halfRad, vertex.y - halfRad, vertex.radius, vertex.radius)
+            }
+        }
+
+        with(g2d){
+            for(id in 0 until sccList.size) {
+                 color = sccColorList[id]
+                 sccList[id].forEach{ vertex ->
                     val halfRad = vertex.radius / 2
                     fillOval(vertex.x - halfRad, vertex.y - halfRad, vertex.radius, vertex.radius)
                 }
@@ -236,4 +249,18 @@ class Panel : JPanel() {
         return cachedColors.getOrPut(id) { randomColor() }
     }
 
+    fun transposeGraph(graph: MutableMap<Vertex, MutableSet<Vertex>>): MutableMap<Vertex, MutableSet<Vertex>> {
+        val transposedGraph: MutableMap<Vertex, MutableSet<Vertex>> = mutableMapOf()
+
+        for ((vertex, _) in graph)
+            transposedGraph[vertex] = mutableSetOf()
+
+        for ((vertex, adjacencyList) in graph) {
+            for (adjacencyVertex in adjacencyList) {
+                transposedGraph[adjacencyVertex]?.add(vertex)
+            }
+        }
+
+        return transposedGraph
+    }
 }

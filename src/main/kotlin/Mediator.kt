@@ -5,13 +5,14 @@ import javax.swing.JFrame
 
 class Mediator {
     lateinit var panel: Panel
+    lateinit var componentsList: List<List<Int>>
+    lateinit var algorithm: Algorithm
     private var graph = Graph()
     private val vertexMap: MutableMap<Int, Vertex> = mutableMapOf()
     private var currentState: State = State.NONE
 
     enum class State {
         NONE,
-        TRANSPOSED,
         DFS1,
         DFS2
     }
@@ -43,46 +44,74 @@ class Mediator {
             }
             if (v.isEmpty()) graph.addVertex(k.id!!)
         }
-
+        algorithm = Algorithm(graph)
+        componentsList = algorithm.getComponents()
     }
 
     fun nextStep(){
         when (currentState) {
             State.NONE -> {
-                //val transposedGraph = graph.getTranspose()
-
-
-            }
-            State.TRANSPOSED -> {
-
-
+                currentState = State.DFS1
+                nextStep()
             }
             State.DFS1 -> {
-
-
-
+                val visitedCount = panel.visited.size
+                if (visitedCount < algorithm.traversalFirst.size) {
+                    val visited = getVertexList(algorithm.traversalFirst.subList(0, visitedCount + 1))
+                    panel.visited = visited
+                } else {
+                    panel.vertices = panel.transposeGraph(panel.vertices)
+                    currentState = State.DFS2
+                    panel.visited = mutableListOf()
+                }
+                panel.repaint()
             }
             State.DFS2 -> {
+                val visitedCount = panel.visited.size
+                if (visitedCount < algorithm.traversalSecond.size) {
+                    val visited = algorithm.traversalSecond.subList(0, visitedCount + 1)
+                    panel.visited = getVertexList(visited)
+                    val currentComponents = mutableListOf<MutableList<Vertex>>()
+                    for (component in componentsList) {
+                        if (visited.containsAll(component))
+                            currentComponents.add(getVertexList(component))
+                    }
+                    panel.sccList = currentComponents
 
+                } else {
+                    panel.vertices = panel.transposeGraph(panel.vertices)
+                    currentState = State.NONE
+                    panel.visited = mutableListOf()
 
-
+                    panel.disableButtons()
+                    panel.disableMouseListener(true)
+                    getResult()
+                }
+                panel.repaint()
             }
         }
 
     }
 
     fun getResult() {
-        val algorithm = Algorithm(graph)
-        val componentsList = algorithm.getComponents()
+        if (currentState == State.DFS2) {
+            panel.vertices = panel.transposeGraph(panel.vertices)
+            currentState = State.NONE
+        }
         val components = mutableListOf<MutableList<Vertex>>()
         for (component in componentsList) {
-            components.add(mutableListOf())
-            for (vertexId in component)
-                vertexMap[vertexId]?.let { components.last().add(it) }
+            components.add(getVertexList(component))
         }
         panel.sccList = components
         panel.repaint()
         graph = Graph()
+    }
+
+    fun getVertexList(idList: List<Int>): MutableList<Vertex> {
+        val vertices = mutableListOf<Vertex>()
+        for (id in idList)
+            vertexMap[id]?.let { vertices.add(it) }
+        return vertices
     }
 
     companion object {
