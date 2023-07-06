@@ -7,9 +7,11 @@ init {
 	}
 }
 
-fun add_Edge(v: Int, w: Int) { //добавляем ребра
+
+fun add_Edge(v: Int, w: Int) { //добавление ребра в список смежности
 	adjacency_List[v].add(w)
 }
+
 
 fun get_Transpose(): Algorithm { //транспонирование графа
 	val transposed_Graph = Algorithm(numberOfVertices)
@@ -19,21 +21,32 @@ fun get_Transpose(): Algorithm { //транспонирование графа
 			transposed_Graph.add_Edge(w, v)
 		}
 	}
-
 	return transposed_Graph
+}
+
+
+private fun fill_Order(v: Int, visited: BooleanArray, stack: MutableList<Int>) { //обход в глубину с заполнением стека
+	visited[v] = true
+	for (i in adjacency_List[v]) {
+		if (!visited[i]) {
+			fill_Order(i, visited, stack)
+		}
+	}
+
+	stack.add(v)
 }
 
 
 private fun DFS(v: Int, visited: BooleanArray) { //обход в глубину
 	visited[v] = true
 	print("$v ")
-
 	for (i in adjacency_List[v]) {
 		if (!visited[i]) {
 			DFS(i, visited)
 		}
 	}
 }
+
 
 fun Kosaraju() { //вывод компонент связности
 	val stack = mutableListOf<Int>() //заводим стек
@@ -53,26 +66,15 @@ fun Kosaraju() { //вывод компонент связности
 
 	while (stack.isNotEmpty()) {	
 		val v = stack.removeAt(stack.size - 1)
-
 		if (!visited[v]) {
 			transposed_Graph.DFS(v, visited)
 			println()
 		}
 	}
 }
-
-private fun fill_Order(v: Int, visited: BooleanArray, stack: MutableList<Int>) { //обнавляем значение
-	visited[v] = true
-
-	for (i in adjacency_List[v]) {
-		if (!visited[i]) {
-			fill_Order(i, visited, stack)
-		}
-	}
-
-	stack.add(v)
 }
-}
+
+
 /*
 fun main() {
 val graph = Algorithm(8)
