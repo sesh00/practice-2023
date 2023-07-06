@@ -1,97 +1,56 @@
-class Algorithm(private val numberOfVertices: Int) {
-private val adjacency_List: MutableList<MutableList<Int>> = mutableListOf()
+class Algorithm(private val graph: Graph) {
+    private var visited: MutableMap<Int, Boolean> = mutableMapOf()
+    private lateinit var stack: MutableList<Int>
+    private lateinit var transposedGraph: Graph
 
-init {
-	for (i in 0 until numberOfVertices) {
-		adjacency_List.add(mutableListOf())
-	}
+    private fun dfsUtil(vertex: Int) {
+        visited[vertex] = true
+        for (neighbor in graph.getNeighbors(vertex)) {
+            if (!visited[neighbor]!!) {
+                dfsUtil(neighbor)
+            }
+        }
+
+        stack.add(vertex)
+    }
+
+    private fun dfs(vertex: Int, result: MutableList<Int>, graph_: Graph) {
+        visited[vertex] = true
+        result.add(vertex)
+
+        for (neighbor in graph_.getNeighbors(vertex)) {
+            if (!visited[neighbor]!!) {
+                dfs(neighbor, result, graph_)
+            }
+        }
+    }
+
+    fun getComponents(): List<List<Int>> {
+        val vertices = graph.getVertices()
+        visited = vertices.associateWith { false }.toMutableMap()
+        stack = mutableListOf()
+        val result: MutableList<List<Int>> = mutableListOf()
+
+        for (vertex in graph.getVertices()) {
+            if (!visited[vertex]!!) {
+                dfsUtil(vertex)
+            }
+        }
+
+        val transposedGraph = graph.getTranspose()
+
+        visited = vertices.associateWith { false }.toMutableMap()
+
+        while (stack.isNotEmpty()) {
+            val vertex = stack.removeAt(stack.size - 1)
+
+            if (!visited[vertex]!!) {
+                val component = mutableListOf<Int>()
+                dfs(vertex, component, transposedGraph)
+                result.add(component)
+            }
+        }
+
+        return result
+    }
 }
-
-fun add_Edge(v: Int, w: Int) { //добавляем ребра
-	adjacency_List[v].add(w)
-}
-
-fun get_Transpose(): Algorithm { //транспонирование графа
-	val transposed_Graph = Algorithm(numberOfVertices)
-
-	for (v in 0 until numberOfVertices) {
-		for (w in adjacency_List[v]) {
-			transposed_Graph.add_Edge(w, v)
-		}
-	}
-
-	return transposed_Graph
-}
-
-
-private fun DFS(v: Int, visited: BooleanArray) { //обход в глубину
-	visited[v] = true
-	print("$v ")
-
-	for (i in adjacency_List[v]) {
-		if (!visited[i]) {
-			DFS(i, visited)
-		}
-	}
-}
-
-fun Kosaraju() { //вывод компонент связности
-	val stack = mutableListOf<Int>() //заводим стек
-	val visited = BooleanArray(numberOfVertices) { false } //список посещенных вершин, по умолчанию false
-
-	for (v in 0 until numberOfVertices) {
-		if (!visited[v]) {
-			fill_Order(v, visited, stack)
-		}
-	}
-
-	val transposed_Graph = get_Transpose()
-
-	for (i in 0 until numberOfVertices) {
-		visited[i] = false
-	}
-
-	while (stack.isNotEmpty()) {	
-		val v = stack.removeAt(stack.size - 1)
-
-		if (!visited[v]) {
-			transposed_Graph.DFS(v, visited)
-			println()
-		}
-	}
-}
-
-private fun fill_Order(v: Int, visited: BooleanArray, stack: MutableList<Int>) { //обнавляем значение
-	visited[v] = true
-
-	for (i in adjacency_List[v]) {
-		if (!visited[i]) {
-			fill_Order(i, visited, stack)
-		}
-	}
-
-	stack.add(v)
-}
-}
-/*
-fun main() {
-val graph = Algorithm(8)
-graph.add_Edge(0, 1)
-graph.add_Edge(1, 2)
-graph.add_Edge(2, 0)
-graph.add_Edge(3, 1)
-graph.add_Edge(3, 2)
-graph.add_Edge(4, 3)
-graph.add_Edge(5, 2)
-graph.add_Edge(7, 4)
-graph.add_Edge(7, 7)
-graph.add_Edge(7, 6)
-graph.add_Edge(5, 6)
-graph.add_Edge(4, 5)
-graph.add_Edge(3, 4)
-graph.add_Edge(6, 5)
-
-println("Компоненты сильной связности:")
-graph.Kosaraju()
-}
-*/

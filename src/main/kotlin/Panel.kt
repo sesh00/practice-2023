@@ -1,18 +1,21 @@
 import java.awt.*
+import java.util.*
+import javax.swing.JButton
 import javax.swing.JPanel
 import kotlin.math.*
 
 class Panel : JPanel() {
     private lateinit var g2d: Graphics2D
     private val mouseHandler = MouseHandler(this)
-    private val fontStyle = Font("Arial ", Font.BOLD, 20)
-
     var explanation: Explanations = Explanations.NOTEXT
+    private val fontStyle = Font("Arial ", Font.BOLD, 20)
+    private var cachedColors: MutableMap<Int, Color> = mutableMapOf()
     var vertices: MutableMap<Vertex, MutableSet<Vertex>> = mutableMapOf()
+    var sccList: MutableList<MutableList<Vertex>> = mutableListOf()
+
 
     init {
-        addMouseListener(mouseHandler)
-        addMouseMotionListener(mouseHandler)
+        disableMouseListener(true)
         background = Color.WHITE
         layout = FlowLayout()
     }
@@ -23,6 +26,24 @@ class Panel : JPanel() {
         private val VERTEX_COLOR = Color.BLACK
         private val START_VERTEX_COLOR = Color.PINK
         private val TEXT_COLOR = Color.BLACK
+    }
+
+    fun disableMouseListener(enable: Boolean) {
+        if (enable) {
+            addMouseListener(mouseHandler)
+            addMouseMotionListener(mouseHandler)
+        } else {
+            removeMouseListener(mouseHandler)
+            removeMouseMotionListener(mouseHandler)
+        }
+    }
+
+    fun disableButtons() {
+        for (component in components) {
+            if (component is JButton) {
+                component.isEnabled = !component.isEnabled
+            }
+        }
     }
 
     override fun paintComponent(g: Graphics) {
@@ -37,6 +58,18 @@ class Panel : JPanel() {
             g2d.color = START_VERTEX_COLOR
             g2d.fillOval(startVertex.x - halfRad, startVertex.y - halfRad, startVertex.radius, startVertex.radius)
         }
+
+        with(g2d){
+            for(id in 0 until sccList.size){
+                color = getVertexColor(id)
+                sccList[id].forEach{ vertex ->
+                    val halfRad = vertex.radius / 2
+                    fillOval(vertex.x - halfRad, vertex.y - halfRad, vertex.radius, vertex.radius)
+                }
+            }
+        }
+        sccList = mutableListOf()
+        cachedColors =  mutableMapOf()
 
         vertices.forEach { (vertex, adjacencyList) ->
             if (vertex.x >= 0 && vertex.y >= 0) {
@@ -70,14 +103,14 @@ class Panel : JPanel() {
 
     private fun drawExplanation() {
         with(g2d) {
-            var x = 150
+            val x = 150
             var y = 20
             color = TEXT_COLOR
             font = Font("Arial", Font.BOLD, 14)
 
             val words: List<String> = explanation.text.split(" ")
             var line = StringBuilder()
-            var maxWidth = getWidth() - 150
+            val maxWidth = width - 150
 
             for (word in words) {
                 if (fontMetrics.stringWidth("$line $word") <= maxWidth) {
@@ -149,7 +182,7 @@ class Panel : JPanel() {
     }
 
     fun removeVertex() {
-        if (vertices.size >= 1) {
+        if (vertices.isNotEmpty()) {
             updateMouseHandler(
                 isDrawingEdge = false,
                 isRemovingVertex = true, isRemovingEdge = false
@@ -190,4 +223,17 @@ class Panel : JPanel() {
 
         repaint()
     }
+
+    private fun randomColor(): Color {
+        val random = Random()
+        val red = random.nextInt(256)
+        val green = random.nextInt(256)
+        val blue = random.nextInt(256)
+        return Color(red, green, blue)
+    }
+
+    private fun getVertexColor(id: Int): Color {
+        return cachedColors.getOrPut(id) { randomColor() }
+    }
+
 }

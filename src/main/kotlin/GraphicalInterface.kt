@@ -2,71 +2,53 @@ import javax.swing.Box
 import javax.swing.JButton
 import javax.swing.JFileChooser
 
-class GraphicalInterface(private val panel: Panel) {
+class GraphicalInterface(private val panel: Panel,
+                         private val mediator: Mediator) {
     private val fileChooser = JFileChooser()
 
     fun setupButtons() {
-        val clearButton = JButton("Очистить").apply {
-            isFocusPainted = false
-            addActionListener {
-                panel.removeAllPoints()
+        val buttonsData = listOf(
+            ButtonData("Очистить") { panel.removeAllPoints() },
+            ButtonData("Добавить ребро") { panel.addEdge() },
+            ButtonData("Удалить вершину") { panel.removeVertex() },
+            ButtonData("Удалить ребро") { panel.removeEdge() },
+            ButtonData("Файл") { chooseFile() },
+            ButtonData("Вычислить") {
+                panel.disableButtons()
+                panel.disableMouseListener(false)
+                mediator.startShow()
             }
-        }
-        panel.add(clearButton)
+        )
 
-        val addEdgeButton = JButton("Добавить ребро").apply {
-            isFocusPainted = false
-            addActionListener {
-                panel.addEdge()
+        buttonsData.forEach { buttonData ->
+            val button = JButton(buttonData.text).apply {
+                isFocusPainted = false
+                addActionListener { buttonData.action() }
             }
+            panel.add(button)
         }
-        panel.add(addEdgeButton)
 
-        val removeVertexButton = JButton("Удалить вершину").apply {
-            isFocusPainted = false
-            addActionListener {
-                panel.removeVertex()
-            }
+        val nextStepButton = createButton("Следующий шаг") { mediator.nextStep() }
+        val resultButton = createButton("Результат") {
+            mediator.getResult()
+            panel.disableButtons()
+            panel.disableMouseListener(true)
         }
-        panel.add(removeVertexButton)
-
-        val removeEdgeButton = JButton("Удалить ребро").apply {
-            isFocusPainted = false
-            addActionListener {
-                panel.removeEdge()
-            }
-        }
-        panel.add(removeEdgeButton)
-
-        val startAlgorithmButton = JButton("Вычислить").apply {
-            isFocusPainted = false
-        }
-        panel.add(startAlgorithmButton)
-
-        val getFileButton = JButton("Файл").apply {
-            isFocusPainted = false
-            addActionListener {
-                chooseFile()
-            }
-        }
-        panel.add(getFileButton)
 
         panel.add(Box.createVerticalGlue())
-
-        val nextStepButton = JButton("Следующий шаг").apply {
-            isFocusPainted = false
-        }
-        nextStepButton.isEnabled = false
         panel.add(nextStepButton)
-
-        val resultButton = JButton("Результат").apply {
-            isFocusPainted = false
-        }
-        resultButton.isEnabled = false
         panel.add(resultButton)
 
         fileChooser.currentDirectory = java.io.File(".")
         fileChooser.fileSelectionMode = JFileChooser.FILES_ONLY
+    }
+
+    private fun createButton(text: String, action: () -> Unit): JButton {
+        return JButton(text).apply {
+            isFocusPainted = false
+            isEnabled = false
+            addActionListener { action() }
+        }
     }
 
     private fun chooseFile() {
@@ -86,3 +68,6 @@ class GraphicalInterface(private val panel: Panel) {
         }
     }
 }
+
+data class ButtonData(val text: String, val action: () -> Unit)
+
