@@ -5,8 +5,8 @@ import javax.swing.JFrame
 
 class Mediator {
     lateinit var panel: Panel
-    lateinit var componentsList: List<List<Int>>
-    lateinit var algorithm: Algorithm
+    private lateinit var componentsList: List<List<Int>>
+    private lateinit var algorithm: Algorithm
     private var graph = Graph()
     private val vertexMap: MutableMap<Int, Vertex> = mutableMapOf()
     private var currentState: State = State.NONE
@@ -104,10 +104,11 @@ class Mediator {
         }
         panel.sccList = components
         panel.repaint()
+        panel.visited = mutableListOf()
         graph = Graph()
     }
 
-    fun getVertexList(idList: List<Int>): MutableList<Vertex> {
+    private fun getVertexList(idList: List<Int>): MutableList<Vertex> {
         val vertices = mutableListOf<Vertex>()
         for (id in idList)
             vertexMap[id]?.let { vertices.add(it) }

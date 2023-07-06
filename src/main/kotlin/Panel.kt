@@ -62,10 +62,11 @@ class Panel : JPanel() {
         }
 
         with(g2d){
-            if (sccList.size == sccColorList.size) {
+            if (sccList.size <= sccColorList.size) {
                 color = getVertexColor(sccList.size)
                 sccColorList.add(color)
-            } else color = sccColorList.last()
+            }
+            color = sccColorList[sccList.size]
             for(vertex in visited){
                 val halfRad = vertex.radius / 2
                 fillOval(vertex.x - halfRad, vertex.y - halfRad, vertex.radius, vertex.radius)
