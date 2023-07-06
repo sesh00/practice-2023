@@ -221,7 +221,7 @@ class Panel : JPanel() {
         explanation = Explanations.NOTEXT
         val radius = min(width, height) * 0.4
         val centerX = width / 2 + 50
-        val centerY = height / 2
+        val centerY = height / 2 + 15
 
         val angleStep = 2 * PI / vertices.size
         var angle = 0.0

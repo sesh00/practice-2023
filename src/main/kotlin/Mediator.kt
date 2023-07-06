@@ -36,8 +36,9 @@ class Mediator {
     }
 
     fun startShow(){
-        panel.vertices.forEach{(k, v) -> vertexMap[k.id!!] = k}
+        panel.explanation = Explanations.START
 
+        panel.vertices.forEach{(k, v) -> vertexMap[k.id!!] = k}
         panel.vertices.forEach { (k, v) ->
             v.forEach { n ->
                 graph.addEdge(k.id!!, n.id!!)
@@ -55,6 +56,7 @@ class Mediator {
                 nextStep()
             }
             State.DFS1 -> {
+                panel.explanation = Explanations.DFS
                 val visitedCount = panel.visited.size
                 if (visitedCount < algorithm.traversalFirst.size) {
                     val visited = getVertexList(algorithm.traversalFirst.subList(0, visitedCount + 1))
@@ -63,10 +65,12 @@ class Mediator {
                     panel.vertices = panel.transposeGraph(panel.vertices)
                     currentState = State.DFS2
                     panel.visited = mutableListOf()
+                    panel.explanation = Explanations.TRANSPOSEGRAPH
                 }
                 panel.repaint()
             }
             State.DFS2 -> {
+                panel.explanation = Explanations.DFSONTRANSPOSE
                 val visitedCount = panel.visited.size
                 if (visitedCount < algorithm.traversalSecond.size) {
                     val visited = algorithm.traversalSecond.subList(0, visitedCount + 1)
@@ -94,6 +98,7 @@ class Mediator {
     }
 
     fun getResult() {
+        panel.explanation = Explanations.RESULT
         if (currentState == State.DFS2) {
             panel.vertices = panel.transposeGraph(panel.vertices)
             currentState = State.NONE
