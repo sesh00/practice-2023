@@ -1,41 +1,41 @@
 class Algorithm(private val numberOfVertices: Int) {
-private val adjacencyList: MutableList<MutableList<Int>> = mutableListOf()
+private val adjacency_List: MutableList<MutableList<Int>> = mutableListOf()
 
 init {
 	for (i in 0 until numberOfVertices) {
-		adjacencyList.add(mutableListOf())
+		adjacency_List.add(mutableListOf())
 	}
 }
 
-fun addEdge(v: Int, w: Int) { //добавляем ребра
-	adjacencyList[v].add(w)
+fun add_Edge(v: Int, w: Int) { //добавляем ребра
+	adjacency_List[v].add(w)
 }
 
-fun getTranspose(): Algorithm { //трансонирование графа
-	val transposedGraph = Algorithm(numberOfVertices)
+fun get_Transpose(): Algorithm { //транспонирование графа
+	val transposed_Graph = Algorithm(numberOfVertices)
 
 	for (v in 0 until numberOfVertices) {
-		for (w in adjacencyList[v]) {
-			transposedGraph.addEdge(w, v)
+		for (w in adjacency_List[v]) {
+			transposed_Graph.add_Edge(w, v)
 		}
 	}
 
-	return transposedGraph
+	return transposed_Graph
 }
 
 
-private fun DFSUtil(v: Int, visited: BooleanArray) { //обход в глубину
+private fun DFS(v: Int, visited: BooleanArray) { //обход в глубину
 	visited[v] = true
 	print("$v ")
 
-	for (i in adjacencyList[v]) {
+	for (i in adjacency_List[v]) {
 		if (!visited[i]) {
-			DFSUtil(i, visited)
+			DFS(i, visited)
 		}
 	}
 }
 
-fun printSCCs() { //вывод компонент связности
+fun Kosaraju() { //вывод компонент связности
 	val stack = mutableListOf<Int>() //заводим стек
 	val visited = BooleanArray(numberOfVertices) { false } //список посещенных вершин, по умолчанию false
 
@@ -45,7 +45,7 @@ fun printSCCs() { //вывод компонент связности
 		}
 	}
 
-	val transposedGraph = getTranspose()
+	val transposed_Graph = get_Transpose()
 
 	for (i in 0 until numberOfVertices) {
 		visited[i] = false
@@ -55,18 +55,18 @@ fun printSCCs() { //вывод компонент связности
 		val v = stack.removeAt(stack.size - 1)
 
 		if (!visited[v]) {
-			transposedGraph.DFSUtil(v, visited)
+			transposed_Graph.DFS(v, visited)
 			println()
 		}
 	}
 }
 
-private fun fillOrder(v: Int, visited: BooleanArray, stack: MutableList<Int>) { //обнавляем значение
+private fun fill_Order(v: Int, visited: BooleanArray, stack: MutableList<Int>) { //обнавляем значение
 	visited[v] = true
 
-	for (i in adjacencyList[v]) {
+	for (i in adjacency_List[v]) {
 		if (!visited[i]) {
-			fillOrder(i, visited, stack)
+			fill_Order(i, visited, stack)
 		}
 	}
 
@@ -76,22 +76,22 @@ private fun fillOrder(v: Int, visited: BooleanArray, stack: MutableList<Int>) { 
 /*
 fun main() {
 val graph = Algorithm(8)
-graph.addEdge(0, 1)
-graph.addEdge(1, 2)
-graph.addEdge(2, 0)
-graph.addEdge(3, 1)
-graph.addEdge(3, 2)
-graph.addEdge(4, 3)
-graph.addEdge(5, 2)
-graph.addEdge(7, 4)
-graph.addEdge(7, 7)
-graph.addEdge(7, 6)
-graph.addEdge(5, 6)
-graph.addEdge(4, 5)
-graph.addEdge(3, 4)
-graph.addEdge(6, 5)
+graph.add_Edge(0, 1)
+graph.add_Edge(1, 2)
+graph.add_Edge(2, 0)
+graph.add_Edge(3, 1)
+graph.add_Edge(3, 2)
+graph.add_Edge(4, 3)
+graph.add_Edge(5, 2)
+graph.add_Edge(7, 4)
+graph.add_Edge(7, 7)
+graph.add_Edge(7, 6)
+graph.add_Edge(5, 6)
+graph.add_Edge(4, 5)
+graph.add_Edge(3, 4)
+graph.add_Edge(6, 5)
 
 println("Компоненты сильной связности:")
-graph.printSCCs()
+graph.Kosaraju()
 }
 */
