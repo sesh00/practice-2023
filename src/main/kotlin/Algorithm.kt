@@ -41,7 +41,7 @@ fun Kosaraju() { //вывод компонент связности
 
 	for (v in 0 until numberOfVertices) {
 		if (!visited[v]) {
-			fillOrder(v, visited, stack)
+			fill_Order(v, visited, stack)
 		}
 	}
 
