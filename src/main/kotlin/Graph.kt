@@ -23,16 +23,6 @@ class Graph {
         return adjacencyList.keys
     }
 
-    fun getEdges(): List<Pair<Int, Int>> {
-        val edges = mutableListOf<Pair<Int, Int>>()
-        adjacencyList.forEach { (source, destinations) ->
-            destinations.forEach { destination ->
-                edges.add(Pair(source, destination))
-            }
-        }
-        return edges
-    }
-
     fun getNeighbors(vertex: Int): List<Int> {
         return adjacencyList[vertex] ?: emptyList()
     }
