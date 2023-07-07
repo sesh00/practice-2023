@@ -44,15 +44,15 @@ class Graph {
     }
 
 
-    override fun toString(): String {
-        val stringBuilder = StringBuilder()
+   // override fun toString(): String {
+     //   val stringBuilder = StringBuilder()
 
-        adjacencyList.forEach { (source, destinations) ->
-            stringBuilder.append("$source -> ")
-            stringBuilder.append(destinations.joinToString(", "))
-            stringBuilder.append("\n")
-        }
+       // adjacencyList.forEach { (source, destinations) ->
+         //   stringBuilder.append("$source -> ")
+           // stringBuilder.append(destinations.joinToString(", "))
+            //stringBuilder.append("\n")
+       // }
 
-        return stringBuilder.toString()
-    }
+        //return stringBuilder.toString()
+    //}
 }
