@@ -27,7 +27,7 @@ class Algorithm(private val graph: Graph) {
     }
 
     fun getComponents(): List<List<Int>> {
-        val vertices = graph.getVertices()
+        //val vertices = graph.getVertices()
         stack = mutableListOf()
         val result: MutableList<List<Int>> = mutableListOf()
 
