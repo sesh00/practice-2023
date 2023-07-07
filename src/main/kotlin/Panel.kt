@@ -9,10 +9,9 @@ class Panel : JPanel() {
     private val mouseHandler = MouseHandler(this)
     var explanation: Explanations = Explanations.NOTEXT
     private val fontStyle = Font("Arial ", Font.BOLD, 20)
-    private var cachedColors: MutableMap<Int, Color> = mutableMapOf()
     var vertices: MutableMap<Vertex, MutableSet<Vertex>> = mutableMapOf()
     var sccList: MutableList<MutableList<Vertex>> = mutableListOf()
-    var sccColorList: MutableList<Color> = mutableListOf()
+    var sccColorList: MutableMap<Int, Color> = mutableMapOf()
     var visited: MutableList<Vertex> = mutableListOf()
 
 
@@ -62,9 +61,9 @@ class Panel : JPanel() {
         }
 
         with(g2d){
-            if (sccList.size <= sccColorList.size) {
-                color = getVertexColor(sccList.size)
-                sccColorList.add(color)
+            if (sccList.size >= sccColorList.size) {
+                for (i in sccColorList.size..sccList.size)
+                    color = getVertexColor(i)
             }
             color = sccColorList[sccList.size]
             for(vertex in visited){
@@ -83,7 +82,6 @@ class Panel : JPanel() {
             }
         }
         sccList = mutableListOf()
-        cachedColors =  mutableMapOf()
 
         vertices.forEach { (vertex, adjacencyList) ->
             if (vertex.x >= 0 && vertex.y >= 0) {
@@ -247,7 +245,7 @@ class Panel : JPanel() {
     }
 
     private fun getVertexColor(id: Int): Color {
-        return cachedColors.getOrPut(id) { randomColor() }
+        return sccColorList.getOrPut(id) { randomColor() }
     }
 
     fun transposeGraph(graph: MutableMap<Vertex, MutableSet<Vertex>>): MutableMap<Vertex, MutableSet<Vertex>> {
