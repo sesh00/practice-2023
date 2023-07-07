@@ -10,7 +10,13 @@ object FileHandler {
 
         file.bufferedReader().useLines { lines ->
             lines.forEach { line ->
-                val vertexId = line.split(" ").map { it.toInt() }
+                val vertexId = line.split(" ").map {
+                    try {
+                        it.toInt()
+                    } catch (e: NumberFormatException) {
+                        return null
+                    }
+                }
 
                 if (vertexId.size == 2 && vertexId[0] != vertexId[1]) {
                     verticesMap.getOrPut(vertexId[0]) { Vertex.createWithId(0, 0) }
