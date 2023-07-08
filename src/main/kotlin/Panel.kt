@@ -86,7 +86,14 @@ class Panel : JPanel() {
         }
 
     }
-
+    private fun componentNeighbors(vertex1: Vertex, vertex2: Vertex): Int {
+        for (id in 0 until sccList.size) {
+            if (sccList[id].contains(vertex1) && sccList[id].contains(vertex2)){
+                return id
+            }
+        }
+        return -1
+    }
     private fun drawVertices() {
         vertices.forEach { (vertex, adjacencyList) ->
             if (vertex.x >= 0 && vertex.y >= 0) {
@@ -109,9 +116,16 @@ class Panel : JPanel() {
 
                     color = TEXT_COLOR
                     drawString(letter, letterX, letterY)
-
                     adjacencyList.forEach { adjacencyVertex ->
+
+                        if (explanation == Explanations.RESULT){
+                            val componentId = componentNeighbors(vertex, adjacencyVertex)
+                            if (componentId > -1 ){
+                                color = sccColorList[componentId]
+                            }
+                        }
                         drawEdge(vertex, adjacencyVertex)
+                        color = VERTEX_COLOR
                     }
                 }
             }
