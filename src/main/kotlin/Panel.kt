@@ -229,6 +229,8 @@ class Panel : JPanel() {
     }
 
     fun arrangeVerticesInCircle() {
+        sccList = mutableListOf()
+        
         explanation = Explanations.NOTEXT
         val radius = min(width, height) * 0.4
         val centerX = width / 2 + 50
