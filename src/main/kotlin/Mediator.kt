@@ -59,8 +59,8 @@ class Mediator {
                 panel.explanation = Explanations.DFS
                 val visitedCount = panel.visited.size
                 if (visitedCount < algorithm.traversalFirst.size) {
-                    val visited = getVertexList(algorithm.traversalFirst.subList(0, visitedCount + 1))
-                    panel.visited = visited
+                    panel.visited = getVertexList(algorithm.traversalFirst.subList(0, visitedCount + 1))
+                    panel.visited.last().bypassNumber = visitedCount + 1
                 } else {
                     panel.vertices = panel.transposeGraph(panel.vertices)
                     currentState = State.DFS2

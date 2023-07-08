@@ -7,8 +7,10 @@ import kotlin.math.*
 class Panel : JPanel() {
     private lateinit var g2d: Graphics2D
     private val mouseHandler = MouseHandler(this)
+    private val fontStyle = Font("Arial ", Font.BOLD, 16)
+
     var explanation: Explanations = Explanations.NOTEXT
-    private val fontStyle = Font("Arial ", Font.BOLD, 20)
+
     var vertices: MutableMap<Vertex, MutableSet<Vertex>> = mutableMapOf()
     var sccList: MutableList<MutableList<Vertex>> = mutableListOf()
     var sccColorList: MutableMap<Int, Color> = mutableMapOf()
@@ -16,6 +18,8 @@ class Panel : JPanel() {
 
 
     init {
+        addMouseListener(mouseHandler)
+        addMouseMotionListener(mouseHandler)
         disableMouseListener(true)
         background = Color.WHITE
         layout = FlowLayout()
@@ -30,13 +34,7 @@ class Panel : JPanel() {
     }
 
     fun disableMouseListener(enable: Boolean) {
-        if (enable) {
-            addMouseListener(mouseHandler)
-            addMouseMotionListener(mouseHandler)
-        } else {
-            removeMouseListener(mouseHandler)
-            removeMouseMotionListener(mouseHandler)
-        }
+        mouseHandler.addingVertex = enable
     }
 
     fun disableButtons() {
@@ -61,6 +59,13 @@ class Panel : JPanel() {
         }
 
         with(g2d){
+            val sumOfLengths = sccList.sumBy { it.size }
+            if (sumOfLengths <= vertices.size && explanation in listOf(Explanations.DELVERTEX,
+                    Explanations.CHOOSEVERTEX2, Explanations.CHOOSEVERTEX1, Explanations.NOTEXT)) {
+                sccList = mutableListOf()
+                vertices.keys.forEach { key ->  key.bypassNumber = null }
+            }
+
             if (sccList.size >= sccColorList.size) {
                 for (i in sccColorList.size..sccList.size)
                     color = getVertexColor(i)
@@ -81,7 +86,6 @@ class Panel : JPanel() {
                 }
             }
         }
-        sccList = mutableListOf()
 
         vertices.forEach { (vertex, adjacencyList) ->
             if (vertex.x >= 0 && vertex.y >= 0) {
@@ -93,7 +97,9 @@ class Panel : JPanel() {
 
                     drawOval(vertex.x - halfRad, vertex.y - halfRad, vertex.radius, vertex.radius)
 
-                    val letter = vertex.id.toString()
+                    var letter = vertex.id.toString()
+                    if (vertex.bypassNumber != null)
+                        letter = letter + "|" + vertex.bypassNumber.toString()
                     val fm = fontMetrics
                     val letterWidth = fm.stringWidth(letter)
                     val letterHeight = fm.height
@@ -110,7 +116,9 @@ class Panel : JPanel() {
             }
         }
         drawExplanation()
-        explanation = Explanations.NOTEXT
+        if (explanation !in listOf(Explanations.DFSONTRANSPOSE, Explanations.START,
+            Explanations.DFS, Explanations.TRANSPOSEGRAPH))
+            explanation = Explanations.NOTEXT
     }
 
     private fun drawExplanation() {

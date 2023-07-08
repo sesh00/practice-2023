@@ -1,8 +1,7 @@
 class Algorithm(private val graph: Graph) {
-    val traversalFirst: MutableList<Int> = mutableListOf()
+    var traversalFirst: MutableList<Int> = mutableListOf()
     val traversalSecond: MutableList<Int> = mutableListOf()
     private lateinit var stack: MutableList<Int>
-    private lateinit var transposedGraph: Graph
 
     private fun dfsUtil(vertex: Int) {
         traversalFirst.add(vertex)
@@ -11,7 +10,6 @@ class Algorithm(private val graph: Graph) {
                 dfsUtil(neighbor)
             }
         }
-
         stack.add(vertex)
     }
 
@@ -27,7 +25,6 @@ class Algorithm(private val graph: Graph) {
     }
 
     fun getComponents(): List<List<Int>> {
-        //val vertices = graph.getVertices()
         stack = mutableListOf()
         val result: MutableList<List<Int>> = mutableListOf()
 
@@ -38,6 +35,7 @@ class Algorithm(private val graph: Graph) {
         }
 
         val transposedGraph = graph.getTranspose()
+        traversalFirst = stack.toMutableList()
 
         while (stack.isNotEmpty()) {
             val vertex = stack.removeAt(stack.size - 1)
@@ -48,7 +46,6 @@ class Algorithm(private val graph: Graph) {
                 result.add(component)
             }
         }
-
         return result
     }
 }

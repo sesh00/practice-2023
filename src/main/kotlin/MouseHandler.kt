@@ -6,15 +6,18 @@ class MouseHandler(private val panel: Panel) : MouseAdapter() {
     private var dragOffsetX = 0
     private var dragOffsetY = 0
 
-
     var startVertex: Vertex? = null
     var isDrawingEdge: Boolean = false
     var isRemovingVertex: Boolean = false
     var isRemovingEdge: Boolean = false
+    var addingVertex: Boolean = true
 
     override fun mousePressed(e: MouseEvent) {
         val clickedPoint = e.point
         var vertexClicked = false
+
+        if (e.button == MouseEvent.BUTTON3)
+            isDrawingEdge = true
 
         for (vertex in panel.vertices.keys) {
             if (vertex.containsPoint(clickedPoint)) {
@@ -26,7 +29,7 @@ class MouseHandler(private val panel: Panel) : MouseAdapter() {
             }
         }
 
-        if (!vertexClicked && e.x >= 0 && e.y >= 0) {
+        if (!vertexClicked && e.x >= 0 && e.y >= 0 && addingVertex) {
             panel.vertices[Vertex.createWithId(e.x, e.y)] = mutableSetOf()
             resetFlags()
             panel.repaint()
@@ -34,18 +37,20 @@ class MouseHandler(private val panel: Panel) : MouseAdapter() {
 
         if ((isDrawingEdge || isRemovingEdge) && startVertex == null && vertexClicked) {
             startVertex = draggedVertex
+
         } else if (isDrawingEdge && startVertex != null && vertexClicked && startVertex != draggedVertex) {
             panel.vertices[startVertex]?.add(draggedVertex!!)
             resetFlags()
+
         } else if (isRemovingEdge && startVertex != null && vertexClicked && startVertex != draggedVertex) {
             panel.vertices[startVertex]?.remove(draggedVertex!!)
             resetFlags()
+
         } else if (isRemovingVertex && vertexClicked) {
             panel.vertices.remove(draggedVertex)
             panel.vertices.forEach { (vert, adjacencyList) ->
-                if (adjacencyList.contains(draggedVertex)) {
+                if (adjacencyList.contains(draggedVertex))
                     panel.vertices[vert]?.remove(draggedVertex)
-                }
             }
             resetFlags()
         }

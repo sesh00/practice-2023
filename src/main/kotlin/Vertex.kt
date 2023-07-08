@@ -6,6 +6,7 @@ class Vertex(
     var y: Int = 0,
 ) {
     val radius: Int = 40
+    var bypassNumber: Int? = null
 
     var id: Int? = null
         private set
