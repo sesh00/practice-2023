@@ -36,6 +36,8 @@ class Mediator {
     }
 
     fun startShow(){
+        panel.sccList = mutableListOf()
+        panel.vertices.keys.forEach { key ->  key.bypassNumber = null }
         panel.explanation = Explanations.START
 
         panel.vertices.forEach{(k, v) -> vertexMap[k.id!!] = k}
@@ -99,6 +101,8 @@ class Mediator {
 
     fun getResult() {
         panel.explanation = Explanations.RESULT
+        panel.vertices.keys.forEach { key ->  key.bypassNumber = null }
+
         if (currentState == State.DFS2) {
             panel.vertices = panel.transposeGraph(panel.vertices)
             currentState = State.NONE
