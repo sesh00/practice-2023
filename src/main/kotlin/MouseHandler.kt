@@ -31,6 +31,7 @@ class MouseHandler(private val panel: Panel) : MouseAdapter() {
 
         if (!vertexClicked && e.x >= 0 && e.y >= 0 && addingVertex) {
             panel.vertices[Vertex.createWithId(e.x, e.y)] = mutableSetOf()
+            panel.explanation = Explanations.NOTEXT
             resetFlags()
             panel.repaint()
         }

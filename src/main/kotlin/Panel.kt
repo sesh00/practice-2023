@@ -38,11 +38,9 @@ class Panel : JPanel() {
     }
 
     fun disableButtons() {
-        for (component in components) {
-            if (component is JButton) {
+        for (component in components)
+            if (component is JButton)
                 component.isEnabled = !component.isEnabled
-            }
-        }
     }
 
     private fun drawStartVertex(){
@@ -161,7 +159,7 @@ class Panel : JPanel() {
         }
 
         if (explanation !in listOf(Explanations.DFSONTRANSPOSE, Explanations.START,
-                Explanations.DFS, Explanations.TRANSPOSEGRAPH))
+                Explanations.DFS, Explanations.TRANSPOSEGRAPH, Explanations.RESULT))
             explanation = Explanations.NOTEXT
     }
 
@@ -245,7 +243,7 @@ class Panel : JPanel() {
 
     fun arrangeVerticesInCircle() {
         sccList = mutableListOf()
-        
+
         explanation = Explanations.NOTEXT
         val radius = min(width, height) * 0.4
         val centerX = width / 2 + 50

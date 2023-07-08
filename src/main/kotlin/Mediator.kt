@@ -76,13 +76,7 @@ class Mediator {
                 val visitedCount = panel.visited.size
                 if (visitedCount < algorithm.traversalSecond.size) {
                     val visited = algorithm.traversalSecond.subList(0, visitedCount + 1)
-                    panel.visited = getVertexList(visited)
-                    val currentComponents = mutableListOf<MutableList<Vertex>>()
-                    for (component in componentsList) {
-                        if (visited.containsAll(component))
-                            currentComponents.add(getVertexList(component))
-                    }
-                    panel.sccList = currentComponents
+                    checkComponents(visited)
 
                 } else {
                     panel.vertices = panel.transposeGraph(panel.vertices)
@@ -97,6 +91,51 @@ class Mediator {
             }
         }
 
+    }
+
+    fun prevStep() {
+        when (currentState) {
+            State.NONE -> {}
+            State.DFS1 -> {
+                panel.explanation = Explanations.DFS
+                val visitedCount = panel.visited.size
+                if (visitedCount != 0) {
+                    panel.visited = getVertexList(algorithm.traversalFirst.subList(0, visitedCount - 1))
+                    if (visitedCount == 1) panel.explanation = Explanations.START
+                } else {
+                    currentState = State.NONE
+                    panel.explanation = Explanations.START
+                    panel.visited = mutableListOf()
+                }
+                panel.repaint()
+            }
+            State.DFS2 -> {
+                panel.explanation = Explanations.DFSONTRANSPOSE
+                val visitedCount = panel.visited.size
+                if (visitedCount != 0) {
+                    val visited = algorithm.traversalSecond.subList(0, visitedCount - 1)
+                    checkComponents(visited)
+                    if (visitedCount == 1) panel.explanation = Explanations.TRANSPOSEGRAPH
+
+                } else {
+                    currentState = State.DFS1
+                    panel.vertices = panel.transposeGraph(panel.vertices)
+                    panel.explanation = Explanations.DFS
+                    panel.visited = getVertexList(algorithm.traversalFirst)
+                }
+                panel.repaint()
+            }
+        }
+    }
+
+    fun checkComponents(visited: MutableList<Int>) {
+        panel.visited = getVertexList(visited)
+        val currentComponents = mutableListOf<MutableList<Vertex>>()
+        for (component in componentsList) {
+            if (visited.containsAll(component))
+                currentComponents.add(getVertexList(component))
+        }
+        panel.sccList = currentComponents
     }
 
     fun getResult() {

@@ -25,6 +25,7 @@ class GraphicalInterface(private val panel: Panel,
 
 
         val nextStepButton = createButton("Следующий шаг") { mediator.nextStep() }
+        val prevStepButton = createButton("Предыдущий шаг") { mediator.prevStep() }
 
         val startAlgorithmButton =  createButton("Вычислить") {
             panel.repaint()
@@ -44,6 +45,7 @@ class GraphicalInterface(private val panel: Panel,
         panel.add(startAlgorithmButton)
         panel.add(Box.createVerticalGlue())
         panel.add(nextStepButton)
+        panel.add(prevStepButton)
         panel.add(resultButton)
 
         fileChooser.currentDirectory = java.io.File(".")
