@@ -45,12 +45,7 @@ class Panel : JPanel() {
         }
     }
 
-    override fun paintComponent(g: Graphics) {
-        super.paintComponent(g)
-        g2d = g as? Graphics2D ?: return
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
-
-
+    private fun drawStartVertex(){
         mouseHandler.startVertex?.let { startVertex ->
             explanation = Explanations.CHOOSEVERTEX2
             val halfRad = startVertex.radius / 2
@@ -58,6 +53,9 @@ class Panel : JPanel() {
             g2d.fillOval(startVertex.x - halfRad, startVertex.y - halfRad, startVertex.radius, startVertex.radius)
         }
 
+    }
+
+    private fun drawVisitedVertices(){
         with(g2d){
             val sumOfLengths = sccList.sumOf { it.size }
             if (sumOfLengths <= vertices.size && explanation in listOf(Explanations.DELVERTEX,
@@ -76,17 +74,22 @@ class Panel : JPanel() {
                 fillOval(vertex.x - halfRad, vertex.y - halfRad, vertex.radius, vertex.radius)
             }
         }
+    }
 
+    private fun drawStronglyConnectedComponents(){
         with(g2d){
             for(id in 0 until sccList.size) {
-                 color = sccColorList[id]
-                 sccList[id].forEach{ vertex ->
+                color = sccColorList[id]
+                sccList[id].forEach{ vertex ->
                     val halfRad = vertex.radius / 2
                     fillOval(vertex.x - halfRad, vertex.y - halfRad, vertex.radius, vertex.radius)
                 }
             }
         }
 
+    }
+
+    private fun drawVertices() {
         vertices.forEach { (vertex, adjacencyList) ->
             if (vertex.x >= 0 && vertex.y >= 0) {
                 with(g2d) {
@@ -115,11 +118,19 @@ class Panel : JPanel() {
                 }
             }
         }
-        drawExplanation()
-        if (explanation !in listOf(Explanations.DFSONTRANSPOSE, Explanations.START,
-            Explanations.DFS, Explanations.TRANSPOSEGRAPH))
-            explanation = Explanations.NOTEXT
+    }
 
+
+    override fun paintComponent(g: Graphics) {
+        super.paintComponent(g)
+        g2d = g as? Graphics2D ?: return
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
+
+        drawStartVertex()
+        drawVisitedVertices()
+        drawStronglyConnectedComponents()
+        drawVertices()
+        drawExplanation()
         startButton?.isEnabled = vertices.isNotEmpty() && mouseHandler.addingVertex
 
     }
@@ -148,6 +159,10 @@ class Panel : JPanel() {
 
             drawString(line.toString(), x, y)
         }
+
+        if (explanation !in listOf(Explanations.DFSONTRANSPOSE, Explanations.START,
+                Explanations.DFS, Explanations.TRANSPOSEGRAPH))
+            explanation = Explanations.NOTEXT
     }
 
     private fun drawEdge(vertex1: Vertex, vertex2: Vertex) {
