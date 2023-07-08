@@ -180,6 +180,8 @@ class Panel : JPanel() {
 
     fun removeAllPoints() {
         vertices = mutableMapOf()
+        sccList = mutableListOf()
+        vertices.keys.forEach { key ->  key.bypassNumber = null }
         Vertex.idCounter = 1
         repaint()
     }
