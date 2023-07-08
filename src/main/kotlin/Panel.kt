@@ -10,7 +10,7 @@ class Panel : JPanel() {
     private val fontStyle = Font("Arial ", Font.BOLD, 16)
 
     var explanation: Explanations = Explanations.NOTEXT
-
+    var startButton: JButton? = null
     var vertices: MutableMap<Vertex, MutableSet<Vertex>> = mutableMapOf()
     var sccList: MutableList<MutableList<Vertex>> = mutableListOf()
     var sccColorList: MutableMap<Int, Color> = mutableMapOf()
@@ -59,7 +59,7 @@ class Panel : JPanel() {
         }
 
         with(g2d){
-            val sumOfLengths = sccList.sumBy { it.size }
+            val sumOfLengths = sccList.sumOf { it.size }
             if (sumOfLengths <= vertices.size && explanation in listOf(Explanations.DELVERTEX,
                     Explanations.CHOOSEVERTEX2, Explanations.CHOOSEVERTEX1, Explanations.NOTEXT)) {
                 sccList = mutableListOf()
@@ -119,6 +119,9 @@ class Panel : JPanel() {
         if (explanation !in listOf(Explanations.DFSONTRANSPOSE, Explanations.START,
             Explanations.DFS, Explanations.TRANSPOSEGRAPH))
             explanation = Explanations.NOTEXT
+
+        startButton?.isEnabled = vertices.isNotEmpty() && mouseHandler.addingVertex
+
     }
 
     private fun drawExplanation() {

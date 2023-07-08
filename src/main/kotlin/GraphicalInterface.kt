@@ -13,12 +13,6 @@ class GraphicalInterface(private val panel: Panel,
             ButtonData("Удалить вершину") { panel.removeVertex() },
             ButtonData("Удалить ребро") { panel.removeEdge() },
             ButtonData("Файл") { chooseFile() },
-            ButtonData("Вычислить") {
-                panel.repaint()
-                panel.disableButtons()
-                panel.disableMouseListener(false)
-                mediator.startShow()
-            }
         )
 
         buttonsData.forEach { buttonData ->
@@ -29,13 +23,25 @@ class GraphicalInterface(private val panel: Panel,
             panel.add(button)
         }
 
+
         val nextStepButton = createButton("Следующий шаг") { mediator.nextStep() }
+
+        val startAlgorithmButton =  createButton("Вычислить") {
+            panel.repaint()
+            panel.disableButtons()
+            panel.disableMouseListener(false)
+            mediator.startShow()
+        }
+
         val resultButton = createButton("Результат") {
             mediator.getResult()
             panel.disableButtons()
             panel.disableMouseListener(true)
         }
 
+        panel.startButton = startAlgorithmButton
+
+        panel.add(startAlgorithmButton)
         panel.add(Box.createVerticalGlue())
         panel.add(nextStepButton)
         panel.add(resultButton)

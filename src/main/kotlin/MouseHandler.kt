@@ -16,7 +16,7 @@ class MouseHandler(private val panel: Panel) : MouseAdapter() {
         val clickedPoint = e.point
         var vertexClicked = false
 
-        if (e.button == MouseEvent.BUTTON3)
+        if (e.button == MouseEvent.BUTTON3 && addingVertex)
             isDrawingEdge = true
 
         for (vertex in panel.vertices.keys) {
