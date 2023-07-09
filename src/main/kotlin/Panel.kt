@@ -1,4 +1,6 @@
 import java.awt.*
+import java.awt.event.KeyAdapter
+import java.awt.event.KeyEvent
 import java.util.*
 import javax.swing.JButton
 import javax.swing.JPanel
@@ -32,6 +34,8 @@ class Panel : JPanel() {
         private val START_VERTEX_COLOR = Color.PINK
         private val TEXT_COLOR = Color.BLACK
     }
+
+
 
     fun disableMouseListener(enable: Boolean) {
         mouseHandler.addingVertex = enable
@@ -94,6 +98,7 @@ class Panel : JPanel() {
         }
         return -1
     }
+
     private fun drawVertices() {
         vertices.forEach { (vertex, adjacencyList) ->
             if (vertex.x >= 0 && vertex.y >= 0) {
