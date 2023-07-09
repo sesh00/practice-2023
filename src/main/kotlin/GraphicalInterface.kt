@@ -1,6 +1,9 @@
+import java.io.BufferedWriter
+import java.io.FileWriter
 import javax.swing.Box
 import javax.swing.JButton
 import javax.swing.JFileChooser
+import javax.swing.filechooser.FileNameExtensionFilter
 
 class GraphicalInterface(private val panel: Panel,
                          private val mediator: Mediator) {
@@ -12,6 +15,7 @@ class GraphicalInterface(private val panel: Panel,
             ButtonData("Добавить ребро") { panel.addEdge() },
             ButtonData("Удалить вершину") { panel.removeVertex() },
             ButtonData("Удалить ребро") { panel.removeEdge() },
+            ButtonData("Сохранить в файл") { saveGraphToFile() },
             ButtonData("Файл") { chooseFile() },
         )
 
@@ -61,18 +65,53 @@ class GraphicalInterface(private val panel: Panel,
     }
 
     private fun chooseFile() {
+        val fileFilter = FileNameExtensionFilter("Text Files", "txt")
+        fileChooser.fileFilter = fileFilter
+
         val returnValue = fileChooser.showOpenDialog(panel)
+
         if (returnValue == JFileChooser.APPROVE_OPTION) {
             val selectedFile = fileChooser.selectedFile
-            val pathFile = selectedFile.absolutePath
-            val result = FileHandler.readGraphFromFile(pathFile)
-            if (result != null) {
-                panel.vertices = result
-                panel.arrangeVerticesInCircle()
+            val fileName = selectedFile.name
+            val fileExtension = fileName.substringAfterLast(".", "")
+            if (fileExtension == "txt") {
+                val pathFile = selectedFile.absolutePath
+                val result = FileHandler.readGraphFromFile(pathFile)
+                if (result != null) {
+                    panel.vertices = result
+                    panel.arrangeVerticesInCircle()
+                } else {
+                    panel.explanation = Explanations.FILEERROR
+                    panel.removeAllPoints()
+                    panel.repaint()
+                }
             } else {
-                panel.explanation = Explanations.FILEERROR
+                panel.explanation = Explanations.INVALIDFILEFORMAT
                 panel.removeAllPoints()
                 panel.repaint()
+            }
+        }
+    }
+
+    fun saveGraphToFile() {
+        val fileChooser = JFileChooser()
+        fileChooser.fileSelectionMode = JFileChooser.FILES_ONLY
+        fileChooser.fileFilter = FileNameExtensionFilter("Text Files (*.txt)", "txt")
+
+        val result = fileChooser.showSaveDialog(null)
+        if (result == JFileChooser.APPROVE_OPTION) {
+            val selectedFile = fileChooser.selectedFile
+
+            try {
+                val writer = BufferedWriter(FileWriter(selectedFile))
+                for ((source, targets) in panel.vertices) {
+                    for (target in targets)
+                        writer.write("${source.id} ${target.id}\n")
+                    if (targets.isEmpty()) writer.write("${source.id}\n")
+                }
+                writer.close()
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
     }

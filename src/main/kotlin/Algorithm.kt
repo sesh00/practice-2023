@@ -1,6 +1,7 @@
 class Algorithm(private val graph: Graph) {
     var traversalFirst: MutableList<Int> = mutableListOf()
     val traversalSecond: MutableList<Int> = mutableListOf()
+    var exitOrder: MutableList<Int> = mutableListOf()
     private lateinit var stack: MutableList<Int>
 
     private fun dfsUtil(vertex: Int) {
@@ -35,7 +36,7 @@ class Algorithm(private val graph: Graph) {
         }
 
         val transposedGraph = graph.getTranspose()
-        traversalFirst = stack.toMutableList()
+        exitOrder = stack.toMutableList()
 
         while (stack.isNotEmpty()) {
             val vertex = stack.removeAt(stack.size - 1)
