@@ -1,3 +1,7 @@
+import java.io.File
+import kotlin.random.Random
+
+
 class Graph {
     private val adjacencyList: MutableMap<Int, MutableList<Int>> = mutableMapOf()
 
@@ -43,4 +47,49 @@ class Graph {
         return adjacencyList.size
     }
 
+
+}
+
+
+object GraphGenerator {
+    private const val leftBorder = 20
+    private const val rightBorder = 31
+
+    private fun generateRandomList(): List<Pair<Int, Int>> {
+        val n = Random.nextInt(leftBorder, rightBorder)
+        val g = Random.nextInt(0, 3*n)
+        val list = mutableListOf<Pair<Int, Int>>()
+
+        for (i in 1..g) {
+            val m = Random.nextInt(0, n)
+            var k = Random.nextInt(0, n)
+
+            while (k == m) {
+                k = Random.nextInt(0, n)
+            }
+
+            val pair = Pair(m, k)
+            list.add(pair)
+        }
+
+        return list
+    }
+
+    fun generateGraph(): MutableMap<Vertex, MutableSet<Vertex>> {
+        val edgesList = generateRandomList()
+        val verticesMap = mutableMapOf<Int, Vertex>()
+        val vertices = mutableMapOf<Vertex, MutableSet<Vertex>>()
+
+        edgesList.forEach { (source, destination)->
+            verticesMap.getOrPut(source) { Vertex.createWithId(0, 0) }
+            verticesMap.getOrPut(destination) { Vertex.createWithId(0, 0) }
+            val vertex1 = verticesMap[source]!!
+            val vertex2 = verticesMap[destination]!!
+
+            vertices.getOrPut(vertex1) { mutableSetOf() }.add(vertex2)
+            vertices.getOrPut(vertex2) { mutableSetOf() }
+        }
+
+        return vertices
+    }
 }

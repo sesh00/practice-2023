@@ -26,6 +26,7 @@ class GraphicalInterface(private val panel: Panel,
             ButtonData("Удалить ребро") { panel.removeEdge() },
             ButtonData("Сохранить в файл") { saveGraphToFile() },
             ButtonData("Скриншот") { makeScreenshot() },
+            ButtonData("Сгенерировать") { panel.generateGraph() },
             ButtonData("Файл") { chooseFile() },
         )
 
@@ -129,13 +130,11 @@ class GraphicalInterface(private val panel: Panel,
         }
     }
 
-
     private fun makeScreenshot() {
         try {
             val window = SwingUtilities.getWindowAncestor(panel)
             val screenshot = Robot().createScreenCapture(window.bounds)
 
-            // Обрезать скриншот
             val croppedScreenshot = screenshot.getSubimage(8, 0, panel.width , panel.height + 30)
 
             val fileChooser = JFileChooser()
@@ -150,7 +149,6 @@ class GraphicalInterface(private val panel: Panel,
                 if (!filePath.endsWith(".png"))
                     filePath += ".png"
 
-                // Сохранить обрезанный скриншот в выбранный файл
                 ImageIO.write(croppedScreenshot, "png", File(filePath))
             }
         } catch (ex: Exception) {

@@ -36,7 +36,6 @@ class Panel : JPanel() {
     }
 
 
-
     fun disableMouseListener(enable: Boolean) {
         mouseHandler.addingVertex = enable
     }
@@ -308,5 +307,11 @@ class Panel : JPanel() {
         }
 
         return transposedGraph
+    }
+
+     fun generateGraph(){
+        removeAllPoints()
+        vertices = GraphGenerator.generateGraph()
+        arrangeVerticesInCircle()
     }
 }

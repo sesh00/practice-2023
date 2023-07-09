@@ -17,7 +17,6 @@ class Mediator {
         DFS2
     }
 
-
     fun run() {
         val frame = JFrame("Graph Manipulator")
         frame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
@@ -131,7 +130,7 @@ class Mediator {
         }
     }
 
-    fun checkComponents(visited: MutableList<Int>) {
+    private fun checkComponents(visited: MutableList<Int>) {
         panel.visited = getVertexList(visited)
         val currentComponents = mutableListOf<MutableList<Vertex>>()
         for (component in componentsList) {
