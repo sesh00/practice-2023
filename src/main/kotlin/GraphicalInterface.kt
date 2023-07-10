@@ -1,9 +1,6 @@
+import java.awt.GraphicsEnvironment
 import java.awt.Rectangle
 import java.awt.Robot
-import java.awt.Toolkit
-import java.awt.event.KeyAdapter
-import java.awt.event.KeyEvent
-import java.awt.image.BufferedImage
 import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
@@ -21,12 +18,12 @@ class GraphicalInterface(private val panel: Panel,
     fun setupButtons() {
         val buttonsData = listOf(
             ButtonData("Очистить") { panel.removeAllPoints() },
+            ButtonData("Сгенерировать") { panel.generateGraph() },
             ButtonData("Добавить ребро") { panel.addEdge() },
             ButtonData("Удалить вершину") { panel.removeVertex() },
             ButtonData("Удалить ребро") { panel.removeEdge() },
             ButtonData("Сохранить в файл") { saveGraphToFile() },
             ButtonData("Скриншот") { makeScreenshot() },
-            ButtonData("Сгенерировать") { panel.generateGraph() },
             ButtonData("Файл") { chooseFile() },
         )
 
@@ -133,9 +130,11 @@ class GraphicalInterface(private val panel: Panel,
     private fun makeScreenshot() {
         try {
             val window = SwingUtilities.getWindowAncestor(panel)
-            val screenshot = Robot().createScreenCapture(window.bounds)
 
-            val croppedScreenshot = screenshot.getSubimage(8, 0, panel.width , panel.height + 30)
+            val graphicsDevice = GraphicsEnvironment.getLocalGraphicsEnvironment().defaultScreenDevice
+            val screenshot = Robot(graphicsDevice).createScreenCapture(
+                Rectangle(window.locationOnScreen.x + 8, window.locationOnScreen.y,
+                    window.width - 16, window.height))
 
             val fileChooser = JFileChooser()
             fileChooser.fileSelectionMode = JFileChooser.FILES_ONLY
@@ -149,7 +148,7 @@ class GraphicalInterface(private val panel: Panel,
                 if (!filePath.endsWith(".png"))
                     filePath += ".png"
 
-                ImageIO.write(croppedScreenshot, "png", File(filePath))
+                ImageIO.write(screenshot, "png", File(filePath))
             }
         } catch (ex: Exception) {
             ex.printStackTrace()

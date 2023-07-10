@@ -128,10 +128,27 @@ class Panel : JPanel() {
                                 color = sccColorList[componentId]
                             }
                         }
+
                         drawEdge(vertex, adjacencyVertex)
                         color = VERTEX_COLOR
+
                     }
                 }
+            }
+        }
+        if (explanation in listOf(Explanations.DFS, Explanations.DFSONTRANSPOSE)) {
+            if (visited.size >= 2) {
+                val currVertex = visited.last()
+                for (i in visited.indices.reversed()) {
+                    if (vertices[visited[i]]?.contains(currVertex) == true) {
+                        g2d.color = Color.RED
+                        drawEdge(visited[i], currVertex)
+                        g2d.color = VERTEX_COLOR
+
+                        break
+                    }
+                }
+
             }
         }
     }
@@ -158,7 +175,11 @@ class Panel : JPanel() {
             color = TEXT_COLOR
             font = Font("Arial", Font.BOLD, 14)
 
-            val words: List<String> = explanation.text.split(" ")
+            val words: List<String>
+            if (visited.isNotEmpty())
+                words = (explanation.text + ". Переход к вершине " +
+                        visited.last().id.toString() + ".").split(" ")
+            else words = explanation.text.split(" ")
             var line = StringBuilder()
             val maxWidth = width - 150
 
